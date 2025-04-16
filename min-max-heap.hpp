@@ -1,28 +1,27 @@
 #pragma once
 
-//both max and min 
+// both max and min
 template <class T>
-class Heap{
+class Heap
+{
 
-    private:
-
+private:
     array<T> arr;
     int size;
 
-    public:
-
+public:
     int parent(int i);
     int left_child(int i);
     int right_child(int i);
-    T root(){ return arr[0];}
+    T root() { return arr[0]; }
 };
 
 template <class T>
-class MinHeap : public Heap{
-
-    };
+class MinHeap : public Heap
+{
+};
 
 template <class T>
-class MaxHeap : public Heap{
-
-    };
+class MaxHeap : public Heap
+{
+};
