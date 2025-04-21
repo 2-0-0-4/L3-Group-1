@@ -28,12 +28,12 @@ int MinMaxHeap::parent(int i)
 
 int MinMaxHeap::left_child(int i)
 {
-    return 2 * i + 1;
+    return (2 * i) + 1;
 }
 
 int MinMaxHeap::right_child(int i)
 {
-    return 2 * i + 2;
+    return (2 * i )+ 2;
 }
 
 std::vector<int> MinMaxHeap::get_children(int i)

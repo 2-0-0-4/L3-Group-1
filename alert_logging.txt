@@ -1,0 +1,104 @@
+[ALERT] Time: 1745185996806 | Sensor: 1 | Type: Upper Threshold Crossed | Temp: 84.4316 C
+[ALERT] Time: 1745185996806 | Sensor: 1 | Type: Upper Threshold Crossed | Temp: 84.4316 C
+[ALERT] Time: 1745185996806 | Sensor: 1 | Type: Upper Threshold Crossed | Temp: 84.4316 C
+[ALERT] Time: 0 | Sensor: 323849344 | Type: Upper Threshold Crossed | Temp: 6.80756e+19 C
+[ALERT] Time: 0 | Sensor: 323849344 | Type: Upper Threshold Crossed | Temp: 6.80756e+19 C
+[CRITICAL] Time: 1745185996807 | Sensors: 3, 4, 5 | Type: Clustered Low Spike | Avg Temp: 35 C
+[ALERT] Time: 0 | Sensor: 323849344 | Type: Isolated High Spike | Temp: 6.80756e+19 C [NOTE] Neighbouring Sensors 323849343 and 323849345 are normal. 
+[ALERT] Time: 0 | Sensor: 322005312 | Type: Isolated High Spike | Temp: 112082 C [NOTE] Neighbouring Sensors 322005311 and 322005313 are normal. 
+[ALERT] Time: 2238001806464 | Sensor: 216 | Type: Isolated High Spike | Temp: 0 C [NOTE] Neighbouring Sensors 215 and 217 are normal. 
+[ALERT] Time: 0 | Sensor: 323849344 | Type: Upper Threshold Crossed | Temp: 6.80756e+19 C
+[CRITICAL] Time: 1745185996807 | Sensors: 3, 4, 5 | Type: Clustered Low Spike | Avg Temp: 35 C
+[CRITICAL] Time: 1745185996807 | Sensors: 3, 4, 5, 6 | Type: Clustered Low Spike | Avg Temp: 36 C
+[ALERT] Time: 0 | Sensor: 323849344 | Type: Isolated High Spike | Temp: 6.80756e+19 C [NOTE] Neighbouring Sensors 323849343 and 323849345 are normal. 
+[ALERT] Time: 0 | Sensor: 322005312 | Type: Isolated High Spike | Temp: 112082 C [NOTE] Neighbouring Sensors 322005311 and 322005313 are normal. 
+[ALERT] Time: -1 | Sensor: 0 | Type: Isolated High Spike | Temp: 1.38616e-41 C [NOTE] Neighbouring Sensors -1 and 1 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 8 | Type: Lower Threshold Crossed | Temp: 11.2738 C
+[ALERT] Time: 0 | Sensor: 323813712 | Type: Upper Threshold Crossed | Temp: 112082 C
+[CRITICAL] Time: 1745185996807 | Sensors: 4, 5, 6 | Type: Clustered Low Spike | Avg Temp: 35 C
+[CRITICAL] Time: 1745185996807 | Sensors: 4, 5, 6, 7 | Type: Clustered Low Spike | Avg Temp: 31 C
+[ALERT] Time: 0 | Sensor: 322005312 | Type: Isolated High Spike | Temp: 112082 C [NOTE] Neighbouring Sensors 322005311 and 322005313 are normal. 
+[ALERT] Time: 1745185996806 | Sensor: 3 | Type: Isolated High Spike | Temp: 40.3863 C [NOTE] Neighbouring Sensors 2 and 4 are normal. 
+[ALERT] Time: -1 | Sensor: 0 | Type: Isolated High Spike | Temp: 1.38616e-41 C [NOTE] Neighbouring Sensors -1 and 1 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 8 | Type: Lower Threshold Crossed | Temp: 11.2738 C
+[CRITICAL] Time: 1745185996807 | Sensors: 4, 5, 6 | Type: Clustered Low Spike | Avg Temp: 35 C
+[CRITICAL] Time: 1745185996807 | Sensors: 4, 5, 6, 7 | Type: Clustered Low Spike | Avg Temp: 31 C
+[ALERT] Time: 1745185996806 | Sensor: 3 | Type: Isolated High Spike | Temp: 40.3863 C [NOTE] Neighbouring Sensors 2 and 4 are normal. 
+[ALERT] Time: 0 | Sensor: 0 | Type: Isolated High Spike | Temp: 0 C [NOTE] Neighbouring Sensors -1 and 1 are normal. 
+[ALERT] Time: 0 | Sensor: 0 | Type: Isolated High Spike | Temp: 0 C [NOTE] Neighbouring Sensors -1 and 1 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 8 | Type: Lower Threshold Crossed | Temp: 11.2738 C
+[CRITICAL] Time: 1745185996807 | Sensors: 6, 7, 8 | Type: Clustered Low Spike | Avg Temp: 23 C
+[ALERT] Time: 1745185996807 | Sensor: 5 | Type: Isolated High Spike | Temp: 42.6941 C [NOTE] Neighbouring Sensors 4 and 6 are normal. 
+[ALERT] Time: 1745185996806 | Sensor: 3 | Type: Isolated High Spike | Temp: 40.3863 C [NOTE] Neighbouring Sensors 2 and 4 are normal. 
+[ALERT] Time: 0 | Sensor: 0 | Type: Isolated High Spike | Temp: 0 C [NOTE] Neighbouring Sensors -1 and 1 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 8 | Type: Lower Threshold Crossed | Temp: 11.2738 C
+[CRITICAL] Time: 1745185996807 | Sensors: 6, 7, 8 | Type: Clustered Low Spike | Avg Temp: 23 C
+[ALERT] Time: 1745185996807 | Sensor: 9 | Type: Isolated High Spike | Temp: 22.4966 C [NOTE] Neighbouring Sensors 8 and 10 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 5 | Type: Isolated High Spike | Temp: 42.6941 C [NOTE] Neighbouring Sensors 4 and 6 are normal. 
+[ALERT] Time: 1745185996806 | Sensor: 3 | Type: Isolated High Spike | Temp: 40.3863 C [NOTE] Neighbouring Sensors 2 and 4 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 8 | Type: Lower Threshold Crossed | Temp: 11.2738 C
+[CRITICAL] Time: 1745185996807 | Sensors: 6, 7, 8 | Type: Clustered Low Spike | Avg Temp: 23 C
+[ALERT] Time: 1745185996807 | Sensor: 9 | Type: Isolated High Spike | Temp: 22.4966 C [NOTE] Neighbouring Sensors 8 and 10 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 5 | Type: Isolated High Spike | Temp: 42.6941 C [NOTE] Neighbouring Sensors 4 and 6 are normal. 
+[ALERT] Time: 1745185996806 | Sensor: 3 | Type: Isolated High Spike | Temp: 40.3863 C [NOTE] Neighbouring Sensors 2 and 4 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 8 | Type: Lower Threshold Crossed | Temp: 11.2738 C
+[CRITICAL] Time: 1745185996807 | Sensors: 6, 7, 8 | Type: Clustered Low Spike | Avg Temp: 23 C
+[ALERT] Time: 1745185996807 | Sensor: 9 | Type: Isolated High Spike | Temp: 22.4966 C [NOTE] Neighbouring Sensors 8 and 10 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 5 | Type: Isolated High Spike | Temp: 42.6941 C [NOTE] Neighbouring Sensors 4 and 6 are normal. 
+[ALERT] Time: 1745185996806 | Sensor: 3 | Type: Isolated High Spike | Temp: 40.3863 C [NOTE] Neighbouring Sensors 2 and 4 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 8 | Type: Lower Threshold Crossed | Temp: 11.2738 C
+[ALERT] Time: 1745185996807 | Sensor: 10 | Type: Isolated Low Spike | Temp: 20.0129 C [NOTE] Neighbouring Sensors 9 and 11 are normal.
+[ALERT] Time: 1745185996807 | Sensor: 6 | Type: Isolated High Spike | Temp: 42.1585 C [NOTE] Neighbouring Sensors 5 and 7 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 5 | Type: Isolated High Spike | Temp: 42.6941 C [NOTE] Neighbouring Sensors 4 and 6 are normal. 
+[ALERT] Time: 1745185996806 | Sensor: 3 | Type: Isolated High Spike | Temp: 40.3863 C [NOTE] Neighbouring Sensors 2 and 4 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 8 | Type: Lower Threshold Crossed | Temp: 11.2738 C
+[ALERT] Time: 1745185996807 | Sensor: 10 | Type: Isolated Low Spike | Temp: 20.0129 C [NOTE] Neighbouring Sensors 9 and 11 are normal.
+[ALERT] Time: 1745185996808 | Sensor: 13 | Type: Isolated High Spike | Temp: 40.6766 C [NOTE] Neighbouring Sensors 12 and 14 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 6 | Type: Isolated High Spike | Temp: 42.1585 C [NOTE] Neighbouring Sensors 5 and 7 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 5 | Type: Isolated High Spike | Temp: 42.6941 C [NOTE] Neighbouring Sensors 4 and 6 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 8 | Type: Lower Threshold Crossed | Temp: 11.2738 C
+[ALERT] Time: 1745185996807 | Sensor: 10 | Type: Isolated Low Spike | Temp: 20.0129 C [NOTE] Neighbouring Sensors 9 and 11 are normal.
+[ALERT] Time: 1745185996808 | Sensor: 13 | Type: Isolated High Spike | Temp: 40.6766 C [NOTE] Neighbouring Sensors 12 and 14 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 6 | Type: Isolated High Spike | Temp: 42.1585 C [NOTE] Neighbouring Sensors 5 and 7 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 5 | Type: Isolated High Spike | Temp: 42.6941 C [NOTE] Neighbouring Sensors 4 and 6 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 8 | Type: Lower Threshold Crossed | Temp: 11.2738 C
+[ALERT] Time: 1745185996807 | Sensor: 10 | Type: Isolated Low Spike | Temp: 20.0129 C [NOTE] Neighbouring Sensors 9 and 11 are normal.
+[ALERT] Time: 1745185996808 | Sensor: 13 | Type: Isolated High Spike | Temp: 40.6766 C [NOTE] Neighbouring Sensors 12 and 14 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 6 | Type: Isolated High Spike | Temp: 42.1585 C [NOTE] Neighbouring Sensors 5 and 7 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 5 | Type: Isolated High Spike | Temp: 42.6941 C [NOTE] Neighbouring Sensors 4 and 6 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 8 | Type: Lower Threshold Crossed | Temp: 11.2738 C
+[ALERT] Time: 1745185996807 | Sensor: 10 | Type: Isolated Low Spike | Temp: 20.0129 C [NOTE] Neighbouring Sensors 9 and 11 are normal.
+[ALERT] Time: 1745185996912 | Sensor: 14 | Type: Isolated High Spike | Temp: 43.4588 C [NOTE] Neighbouring Sensors 13 and 15 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 6 | Type: Isolated High Spike | Temp: 42.1585 C [NOTE] Neighbouring Sensors 5 and 7 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 5 | Type: Isolated High Spike | Temp: 42.6941 C [NOTE] Neighbouring Sensors 4 and 6 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 8 | Type: Lower Threshold Crossed | Temp: 11.2738 C
+[ALERT] Time: 1745185996807 | Sensor: 10 | Type: Isolated Low Spike | Temp: 20.0129 C [NOTE] Neighbouring Sensors 9 and 11 are normal.
+[ALERT] Time: 1745185996912 | Sensor: 14 | Type: Isolated High Spike | Temp: 43.4588 C [NOTE] Neighbouring Sensors 13 and 15 are normal. 
+[ALERT] Time: 1745185996912 | Sensor: 11 | Type: Isolated High Spike | Temp: 42.7057 C [NOTE] Neighbouring Sensors 10 and 12 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 5 | Type: Isolated High Spike | Temp: 42.6941 C [NOTE] Neighbouring Sensors 4 and 6 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 8 | Type: Lower Threshold Crossed | Temp: 11.2738 C
+[ALERT] Time: 1745185996912 | Sensor: 11 | Type: Isolated Low Spike | Temp: 42.7057 C [NOTE] Neighbouring Sensors 10 and 12 are normal.
+[ALERT] Time: 1745185996912 | Sensor: 14 | Type: Isolated High Spike | Temp: 43.4588 C [NOTE] Neighbouring Sensors 13 and 15 are normal. 
+[ALERT] Time: 1745185996912 | Sensor: 10 | Type: Isolated High Spike | Temp: 44.2424 C [NOTE] Neighbouring Sensors 9 and 11 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 5 | Type: Isolated High Spike | Temp: 42.6941 C [NOTE] Neighbouring Sensors 4 and 6 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 8 | Type: Lower Threshold Crossed | Temp: 11.2738 C
+[CRITICAL] Time: 1745185996912 | Sensors: 7, 8, 9 | Type: Clustered Low Spike | Avg Temp: 23 C
+[ALERT] Time: 1745185996912 | Sensor: 14 | Type: Isolated High Spike | Temp: 43.4588 C [NOTE] Neighbouring Sensors 13 and 15 are normal. 
+[ALERT] Time: 1745185996912 | Sensor: 10 | Type: Isolated High Spike | Temp: 44.2424 C [NOTE] Neighbouring Sensors 9 and 11 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 5 | Type: Isolated High Spike | Temp: 42.6941 C [NOTE] Neighbouring Sensors 4 and 6 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 8 | Type: Lower Threshold Crossed | Temp: 11.2738 C
+[CRITICAL] Time: 1745185996912 | Sensors: 7, 8, 9 | Type: Clustered Low Spike | Avg Temp: 23 C
+[ALERT] Time: 1745185996912 | Sensor: 14 | Type: Isolated High Spike | Temp: 43.4588 C [NOTE] Neighbouring Sensors 13 and 15 are normal. 
+[ALERT] Time: 1745185996912 | Sensor: 10 | Type: Isolated High Spike | Temp: 44.2424 C [NOTE] Neighbouring Sensors 9 and 11 are normal. 
+[ALERT] Time: 1745185996912 | Sensor: 6 | Type: Isolated High Spike | Temp: 44.5984 C [NOTE] Neighbouring Sensors 5 and 7 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 8 | Type: Lower Threshold Crossed | Temp: 11.2738 C
+[CRITICAL] Time: 1745185996807 | Sensors: 6, 7, 8 | Type: Clustered Low Spike | Avg Temp: 31 C
+[ALERT] Time: 1745185996912 | Sensor: 14 | Type: Isolated High Spike | Temp: 43.4588 C [NOTE] Neighbouring Sensors 13 and 15 are normal. 
+[ALERT] Time: 1745185996912 | Sensor: 10 | Type: Isolated High Spike | Temp: 44.2424 C [NOTE] Neighbouring Sensors 9 and 11 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 5 | Type: Isolated High Spike | Temp: 42.6941 C [NOTE] Neighbouring Sensors 4 and 6 are normal. 
+[ALERT] Time: 1745185996807 | Sensor: 8 | Type: Lower Threshold Crossed | Temp: 11.2738 C
+[CRITICAL] Time: 1745185996807 | Sensors: 6, 7, 8 | Type: Clustered Low Spike | Avg Temp: 31 C
+[ALERT] Time: 1745185996912 | Sensor: 14 | Type: Isolated High Spike | Temp: 43.4588 C [NOTE] Neighbouring Sensors 13 and 15 are normal. 
+[ALERT] Time: 1745185996912 | Sensor: 10 | Type: Isolated High Spike | Temp: 44.2424 C [NOTE] Neighbouring Sensors 9 and 11 are normal. 
+[ALERT] Time: 1745185996912 | Sensor: 5 | Type: Isolated High Spike | Temp: 44.6912 C [NOTE] Neighbouring Sensors 4 and 6 are normal. 
+[ALERT] Time: 
