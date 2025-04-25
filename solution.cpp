@@ -18,10 +18,10 @@ using namespace chrono;
 
 // Configuration
 const int numSensors = 15;
-const int delayMs = 100;     // Interval between readings per sensor
-const int anomalyEvery = 15; // Inject anomalies every 50 readings
-const int seed = 8969;       // GLOBAL SEED for reproducibility
-
+const int delayMs = 100;                   // Interval between readings per sensor
+const int anomalyEvery = 15;               // Inject anomalies every 50 readings
+const int seed = 8969;                     // GLOBAL SEED for reproducibility
+std::vector<std::pair<int, int>> counters; // storing counter for each sensort, first = time, second = count
 // Shared queue and mutex
 queue<SensorReading> readingQueue;
 mutex queueMutex;
@@ -108,6 +108,15 @@ void sensorStream(int sensorID)
     }
 }
 
+void update_counters(int x, int t)
+{
+    // for (auto sensor : sensor_vector)
+    // {
+    //     int x = sensor.sensorID;
+    counters[x - 1].first = t;
+    counters[x - 1].second++;
+    // }
+}
 // Monitor thread
 // all the alert signals/checks will go here
 void monitorReadings()
@@ -115,7 +124,6 @@ void monitorReadings()
     std::ofstream outfile("alert_logging.txt", std::ios::app);
 
     MinMaxHeap Stream; // declare a heap
-    
     while (true)
     {
         // std::ofstream outfile("alert_logging.txt", std::ios::app);
@@ -133,7 +141,8 @@ void monitorReadings()
                 // }
                 Stream.replace(reading); // insert/replace into heap
 
-                if(Stream.get_size()>= 1){
+                if (Stream.get_size() >= 1)
+                {
                     std::vector<SensorReading> top_min_1 = Stream.top_k_min(1);
                     std::vector<SensorReading> top_max_1 = Stream.top_k_max(1);
 
@@ -154,153 +163,179 @@ void monitorReadings()
             }
         }
 
-        //Isolated low/ high spike 
-        if (Stream.get_size() > 5){
+        // Isolated low/ high spike
+        if (Stream.get_size() > 5)
+        {
 
             std::vector<SensorReading> clusterMin;
             std::vector<SensorReading> clusterMax;
             std::vector<SensorReading> top_min = Stream.top_k_min(5);
             std::vector<SensorReading> top_max = Stream.top_k_max(5);
             int AvgTemp;
-
+            // min alerts
             std::vector<SensorReading> SensorIdsMin;
             for (SensorReading i : top_min)
             {
                 SensorIdsMin.push_back(i);
             }
+            std::sort(SensorIdsMin.begin(), SensorIdsMin.end(), [](const SensorReading &a, const SensorReading &b)
+                      { return a.sensorID < b.sensorID; });
 
-            std::sort(SensorIdsMin.begin(), SensorIdsMin.end(), [](const SensorReading& a, const SensorReading& b){
-                return a.sensorID < b.sensorID;
-            });
-
-            for(int i = 0; i< SensorIdsMin.size()-1; i++){
+            for (int i = 0; i < SensorIdsMin.size() - 1; i++)
+            {
                 // if SensorIds !=0
-                if(i != 0 && i != SensorIdsMin.size()-1){
-                    if ((SensorIdsMin[i-1].sensorID != (SensorIdsMin[i].sensorID)-1) && (SensorIdsMin[i+1].sensorID != (SensorIdsMin[i].sensorID)+1)){
-                        outfile << "[ALERT] Time: " << SensorIdsMin[i].timestamp << " | Sensor: " << SensorIdsMin[i].sensorID << " | Type: Isolated Low Spike | Temp: " << SensorIdsMin[i].temperature << " C [NOTE] Neighbouring Sensors " <<(SensorIdsMin[i].sensorID)-1<< " and " <<(SensorIdsMin[i].sensorID)+1<< " are normal.\n"  ;
-
+                if (i != 0 && i != SensorIdsMin.size() - 1)
+                {
+                    if ((SensorIdsMin[i - 1].sensorID != (SensorIdsMin[i].sensorID) - 1) && (SensorIdsMin[i + 1].sensorID != (SensorIdsMin[i].sensorID) + 1))
+                    {
+                        outfile << "[ALERT] Time: " << SensorIdsMin[i].timestamp << " | Sensor: " << SensorIdsMin[i].sensorID << " | Type: Isolated Low Spike | Temp: " << SensorIdsMin[i].temperature << " C [NOTE] Neighbouring Sensors " << (SensorIdsMin[i].sensorID) - 1 << " and " << (SensorIdsMin[i].sensorID) + 1 << " are normal.\n";
                     }
                 }
 
-                //cluster
-                if(clusterMin.empty() || SensorIdsMin[i].sensorID == (clusterMin.back().sensorID )+1){
+                // cluster
+                if (clusterMin.empty() || SensorIdsMin[i].sensorID == (clusterMin.back().sensorID) + 1)
+                {
                     clusterMin.push_back(SensorIdsMin[i]);
-                }else{
-                    if(clusterMin.size() >= 3){
-                        AvgTemp =0;
+                }
+                else
+                {
+                    if (clusterMin.size() >= 3)
+                    {
+                        AvgTemp = 0;
                         outfile << "[CRITICAL] Time: " << SensorIdsMin[i].timestamp << " | Sensors: ";
 
-                        for(int j = 0; j< clusterMin.size(); j++){
+                        for (int j = 0; j < clusterMin.size(); j++)
+                        {
 
-                            if(j == clusterMin.size()-1){
-                                outfile << clusterMin[j].sensorID; //for the last line 
-                            }else{
+                            if (j == clusterMin.size() - 1)
+                            {
+                                outfile << clusterMin[j].sensorID; // for the last line
+                            }
+                            else
+                            {
                                 outfile << clusterMin[j].sensorID << ", ";
                             }
                             AvgTemp += clusterMin[j].temperature;
-
-
                         }
 
-                        outfile << " | Type: Clustered Low Spike | Avg Temp: " << (AvgTemp)/clusterMin.size() << " C" << '\n';
+                        outfile << " | Type: Clustered Low Spike | Avg Temp: " << (AvgTemp) / clusterMin.size() << " C" << '\n';
                     }
                     clusterMin = {SensorIdsMin[i]};
                 }
-        
-                if(clusterMin.size() >= 3){
-                    AvgTemp =0;
+
+                if (clusterMin.size() >= 3)
+                {
+                    AvgTemp = 0;
                     outfile << "[CRITICAL] Time: " << SensorIdsMin[i].timestamp << " | Sensors: ";
 
-                    for(int j = 0; j< clusterMin.size(); j++){
+                    for (int j = 0; j < clusterMin.size(); j++)
+                    {
 
-                        if(j == clusterMin.size()-1){
-                            outfile << clusterMin[j].sensorID; //for the last line 
-                        }else{
+                        if (j == clusterMin.size() - 1)
+                        {
+                            outfile << clusterMin[j].sensorID; // for the last line
+                        }
+                        else
+                        {
                             outfile << clusterMin[j].sensorID << ", ";
                         }
                         AvgTemp += clusterMin[j].temperature;
-
-
                     }
 
-                    outfile << " | Type: Clustered Low Spike | Avg Temp: " << (AvgTemp)/clusterMin.size() << " C" << '\n';
-
-
+                    outfile << " | Type: Clustered Low Spike | Avg Temp: " << (AvgTemp) / clusterMin.size() << " C" << '\n';
                 }
             }
 
-            
-
+            // max alerts
             std::vector<SensorReading> SensorIdsMax;
             for (SensorReading i : top_max)
             {
                 SensorIdsMax.push_back(i);
             }
 
-            std::sort(SensorIdsMax.begin(), SensorIdsMax.end(), [](const SensorReading& a, const SensorReading& b){
-                return a.sensorID > b.sensorID;
-            });
-            for(int i = 0; i< SensorIdsMax.size()-1; i++){
+            std::sort(SensorIdsMax.begin(), SensorIdsMax.end(), [](const SensorReading &a, const SensorReading &b)
+                      { return a.sensorID > b.sensorID; });
+            for (int i = 0; i < SensorIdsMax.size() - 1; i++)
+            {
                 // if SensorIds !=0
-                if(i != 0 && i != SensorIdsMax.size()-1){
-                    if ((SensorIdsMax[i-1].sensorID != (SensorIdsMax[i].sensorID)-1) && (SensorIdsMax[i+1].sensorID != (SensorIdsMax[i].sensorID)+1)){
-                        outfile << "[ALERT] Time: " << SensorIdsMax[i].timestamp << " | Sensor: " << SensorIdsMax[i].sensorID << " | Type: Isolated High Spike | Temp: " << SensorIdsMax[i].temperature << " C [NOTE] Neighbouring Sensors " <<(SensorIdsMax[i].sensorID)-1<< " and " <<(SensorIdsMax[i].sensorID)+1<< " are normal. \n"  ;
-
+                if (i != 0 && i != SensorIdsMax.size() - 1)
+                {
+                    if ((SensorIdsMax[i - 1].sensorID != (SensorIdsMax[i].sensorID) - 1) && (SensorIdsMax[i + 1].sensorID != (SensorIdsMax[i].sensorID) + 1))
+                    {
+                        outfile << "[ALERT] Time: " << SensorIdsMax[i].timestamp << " | Sensor: " << SensorIdsMax[i].sensorID << " | Type: Isolated High Spike | Temp: " << SensorIdsMax[i].temperature << " C [NOTE] Neighbouring Sensors " << (SensorIdsMax[i].sensorID) - 1 << " and " << (SensorIdsMax[i].sensorID) + 1 << " are normal. \n";
                     }
                 }
-                //cluster
-                if(clusterMax.empty() || SensorIdsMax[i].sensorID == clusterMax.back().sensorID +1){
+                // cluster
+                if (clusterMax.empty() || SensorIdsMax[i].sensorID == clusterMax.back().sensorID + 1)
+                {
                     clusterMax.push_back(SensorIdsMax[i]);
-                }else{
-                    if(clusterMax.size() >= 3){
-                        AvgTemp =0;
+                }
+                else
+                {
+                    if (clusterMax.size() >= 3)
+                    {
+                        AvgTemp = 0;
                         outfile << "[CRITICAL] Time: " << SensorIdsMax[i].timestamp << " | Sensors: ";
 
-                        for(int j = 0; j< clusterMax.size(); j++){
+                        for (int j = 0; j < clusterMax.size(); j++)
+                        {
 
-                            if(j == clusterMax.size()-1){
-                                outfile << clusterMax[j].sensorID; //for the last line 
-                            }else{
+                            if (j == clusterMax.size() - 1)
+                            {
+                                outfile << clusterMax[j].sensorID; // for the last line
+                            }
+                            else
+                            {
                                 outfile << clusterMax[j].sensorID << ", ";
                             }
                             AvgTemp += clusterMax[j].temperature;
-
-
                         }
 
-                        outfile << " | Type: Clustered High Spike | Avg Temp: " << (AvgTemp)/clusterMax.size() << " C" << '\n';
+                        outfile << " | Type: Clustered High Spike | Avg Temp: " << (AvgTemp) / clusterMax.size() << " C" << '\n';
                     }
                     clusterMax = {SensorIdsMax[i]};
                 }
-        
-                if(clusterMax.size() >= 3){
-                    AvgTemp =0;
+
+                if (clusterMax.size() >= 3)
+                {
+                    AvgTemp = 0;
                     outfile << "[CRITICAL] Time: " << SensorIdsMax[i].timestamp << " | Sensors: ";
 
-                    for(int j = 0; j< clusterMax.size(); j++){
+                    for (int j = 0; j < clusterMax.size(); j++)
+                    {
 
-                        if(j == clusterMax.size()-1){
-                            outfile << clusterMax[j].sensorID; //for the last line 
-                        }else{
+                        if (j == clusterMax.size() - 1)
+                        {
+                            outfile << clusterMax[j].sensorID; // for the last line
+                        }
+                        else
+                        {
                             outfile << clusterMax[j].sensorID << ", ";
                         }
                         AvgTemp += clusterMax[j].temperature;
+                    }
 
-
+                    outfile << " | Type: Clustered High Spike | Avg Temp: " << (AvgTemp) / clusterMax.size() << " C" << '\n';
                 }
-
-        outfile << " | Type: Clustered High Spike | Avg Temp: " << (AvgTemp)/clusterMax.size() << " C" << '\n';
-
-
             }
 
+            for (int x = 0; top_min.size(); x++)
+            {
+                long long int curr_time = currentTimestamp();
+                if ((top_min[x].timestamp - counters[top_min[x].sensorID - 1].first) < 10)
+                {
+                    update_counters(top_max[x].sensorID, top_min[x].timestamp);
+                }
+                if (counters[top_min[x].sensorID - 1].second > 5)
+                {
+                    outfile << "[WARNING] Time: " << top_min[x].timestamp << " | Sensor: " << top_min[x].sensorID << " | Type: Cold Spot Detected | Temp: " << top_min[x].temperature << "\n";
+                }
+            }
 
-        }
+        } // if size > 5 ends here
 
-
-    }
         this_thread::sleep_for(milliseconds(50));
-    }
+    } // end of while
     outfile.close();
 }
 
@@ -311,7 +346,10 @@ int main()
     {
         thread(sensorStream, i).detach();
     }
-
+    for (auto s : counters)
+    {
+        s.first = s.second = 0;
+    }
     // Start monitor thread
     monitorReadings();
     return 0;
