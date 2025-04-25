@@ -45,8 +45,19 @@ int main(){
     MinMaxHeap Heap;
 
     Heap.insert(a);
+    Heap.insert(b);
+    Heap.insert(c);
+    Heap.insert(d);
     Heap.insert(e);
-    Heap.delete_value(0);
+    Heap.insert(f);
+    Heap.insert(g);
+    // Heap.insert(e);
+    // Heap.insert(e);
+    // Heap.insert(e);
+    // Heap.insert(e);
+
+
+    // Heap.delete_value(0);
 
     Heap.print();
 
