@@ -6,7 +6,7 @@
 // template <class T>
 bool MinMaxHeap::isMinLevel(int i)
 {
-    return int(floor(log2(i + 1))) % 2 == 0;
+    return int(floor(log2(i + 1))) % 2 == 0; //if even then true
 }
 
 void MinMaxHeap::swap(int i, int j)
@@ -17,8 +17,10 @@ void MinMaxHeap::swap(int i, int j)
 }
 
 int MinMaxHeap::grandparent(int i)
-{
-    return parent(parent(i));
+{   
+    if(i <=2) return parent(parent(i));
+
+    return -1;
 }
 
 int MinMaxHeap::parent(int i)
@@ -33,7 +35,7 @@ int MinMaxHeap::left_child(int i)
 
 int MinMaxHeap::right_child(int i)
 {
-    return (2 * i )+ 2;
+    return (2 * i ) + 2;
 }
 
 std::vector<int> MinMaxHeap::get_children(int i)
@@ -41,71 +43,47 @@ std::vector<int> MinMaxHeap::get_children(int i)
 
     std::vector<int> children;
 
-    if (i < size)
-    { // push children to arrray
-        children.push_back(right_child(i));
-        children.push_back(left_child(i));
+    if (i < size) //if index is valid
+    { // push children to arrray if the right and left children exist 
+        if(right_child(i) <size) children.push_back(right_child(i)); 
+        if(left_child(i) <size) children.push_back(left_child(i));
     }
     for (int child : children)
-    { // iterate over children and push grand children
+    { // iterate over children and push grand children if they exist 
         if (child < size)
         {
-            children.push_back(right_child(child));
-            children.push_back(left_child(child));
+            if(right_child(child) <size)children.push_back(right_child(child));
+            if(left_child(child) <size) children.push_back(left_child(child));
         }
     }
 
     return children;
 }
 
-// std::vector<int> MinMaxHeap::get_grandchildren(int i){
-
-//     // std::vector<SensorReading> children;
-//     std::vector<int> children_index;
-//     if (i < size)
-//     { // push children to arrray
-//         children_index.push_back(right_child(i));
-//         // children.push_back(arr[right_child(i)]);
-
-//         children_index.push_back(left_child(i));
-//         // children.push_back(arr[left_child(i)]);
-//     }
-//     for (int child : children_index)
-//     { // iterate over children and push grand children
-//         if (child < size)
-//         {
-//             children.push_back(arr[right_child(child)]);
-//             children.push_back(arr[left_child(child)]);
-//         }
-//     }
-
-//     return children;
-
-// }
 
 int MinMaxHeap::min_descendent(int i) // returns index of min descendent
 {
-    std::vector<int> children = get_children(i);
+    std::vector<int> children = get_children(i); //get all the children
 
     if (children.empty())
-    { // no descendents
-        return -1;
+    { // 
+        return -1; //if empty no descendents
     }
-    int min = children[0];
-    for (int child : children)
+    int min = children[0]; //assume first value as min
+    for (int child : children) //for the indexes in childrne array 
     {
-        if (arr[child].temperature < arr[min].temperature)
+        if (arr[child].temperature < arr[min].temperature) //if lesser than min make min
         {
             min = child;
         }
     }
 
-    return min;
+    return min; //output the min index 
 }
 
 int MinMaxHeap::max_descendent(int i)
 {
-    std::vector<int> children = get_children(i);
+    std::vector<int> children = get_children(i); //get children 
 
     if (children.empty())
     { // no descendents
@@ -114,7 +92,7 @@ int MinMaxHeap::max_descendent(int i)
     int max = children[0];
     for (int child : children)
     {
-        if (arr[child].temperature > arr[max].temperature)
+        if (arr[child].temperature > arr[max].temperature) //if larger then make max
         {
             max = child;
         }
@@ -127,21 +105,20 @@ void MinMaxHeap::bubble_up(int i)
 {
 
     if (i == 0)
-        return; // cant bubble upe from here
+        return; // cant bubble up from here its the lowest value 
 
     int parent = this->parent(i); // get parent
 
     if (isMinLevel(i))
     { // for min level
         if (arr[i].temperature > arr[parent].temperature)
-        { // if value is greater than parent shift it to a max level
+        { // if value is greater than parent shift it to the max level level 
             swap(i, parent);
-            bubble_up_max(parent); // it is now in max level
+            bubble_up_max(parent); // it is now in max level, bubble up among max levels
         }
         else
         {
-            bubble_up_min(i);
-            //  bubble_up_min(parent);
+            bubble_up_min(i); //else bubble up in min level
         }
     }
     else
@@ -149,11 +126,11 @@ void MinMaxHeap::bubble_up(int i)
         if (arr[i].temperature < arr[parent].temperature)
         { // if value is lesser than parent shift it to a min level
             swap(i, parent);
-            bubble_up_min(parent); // it is now in min level
+            bubble_up_min(parent); // it is now in min level, bubble up among min levels
         }
         else
-        {
-            bubble_up_max(i);
+        { 
+            bubble_up_max(i); //else bubble up in max level
             // bubble_up_max(parent);
         }
     }
@@ -161,33 +138,36 @@ void MinMaxHeap::bubble_up(int i)
 
 void MinMaxHeap::bubble_up_min(int i)
 {
-    int grandparent = this->grandparent(i);
+    int grandparent = this->grandparent(i); //get grandparent
+    if(grandparent ==-1) return;
     while (i > 2 && (arr[i].temperature < arr[grandparent].temperature))
     { // check for i >2 to make sure i has a grandparent (is a deeper level node)
-        swap(i, grandparent);
+        swap(i, grandparent); //if i.temp is lesser than grandparent, then swap 
         i = grandparent;
         grandparent = this->grandparent(i);
+        if(grandparent ==-1) return;
     }
 }
 
 void MinMaxHeap::bubble_up_max(int i)
 {
-    int grandparent = this->grandparent(i);
-    while (i > 2 && (arr[i].temperature > arr[grandparent].temperature))
-    {
-        swap(i, grandparent);
+    int grandparent = this->grandparent(i); //get grandparent 
+    if(grandparent ==-1) return;
+    while (i > 2 && (arr[i].temperature > arr[grandparent].temperature)) 
+    { // if i has a grandparent, if its greater than its grandparent, 
+        swap(i, grandparent); // swap 
         i = grandparent;
         grandparent = this->grandparent(i);
+        if(grandparent ==-1) return;
     }
 }
 
 void MinMaxHeap::insert(SensorReading x)
 {
-
-    // resize?
-    arr.push_back(x);
-    size++;
-    bubble_up(size - 1);
+    //no resize because its a vector
+    arr.push_back(x); //insert into array 
+    size++; //increment size
+    bubble_up(size - 1); //call bubble up on the inserted index
 }
 
 void MinMaxHeap::replace(SensorReading x) // replaces if alr there else inserts
@@ -196,24 +176,24 @@ void MinMaxHeap::replace(SensorReading x) // replaces if alr there else inserts
     //  change temp
     //  insert
 
-    for (int i = 0; i < size; i++)
+    for (int i = 0; i < size; i++) //traverse the heap 
     {
-        if (this->arr[i].sensorID == x.sensorID)
+        if (this->arr[i].sensorID == x.sensorID) //if sensor ID matches 
         {
-            this->delete_value(i);
-            this->insert(x);
+            this->delete_value(i); //delete old sensor value 
+            this->insert(x); //insert the new one 
             return;
         }
     }
-    this->insert(x);
+    this->insert(x); //if not in heap, just insert 
 }
 
 void MinMaxHeap::trickle_down(int i)
 {
-    if (i < size)
+    if (i < size) //if less than size , i.e. if valid index
     {
 
-        if (isMinLevel(i))
+        if (isMinLevel(i)) //if min level, call trickledown min else call trickle down max
         {
             trickle_down_min(i);
         }
@@ -226,33 +206,34 @@ void MinMaxHeap::trickle_down(int i)
 
 void MinMaxHeap::trickle_down_min(int i)
 {
-    int min;
+    int min; //declare for later use
     int min_parent;
 
-    while (size > left_child(i))
-    { // while node has children
+    while (left_child(i) < size) 
+    { // while node has children (left is the most far left one)
         // return;
-        min = min_descendent(i);
+        min = min_descendent(i); //get min descendent of the index being deleted 
         if (min == -1)
             break;
-        min_parent = parent(min);
+        min_parent = parent(min); //get parent of min 
 
-        if (arr[min].temperature < arr[i].temperature)
-        {
-            swap(min, i);
-            if (min >= 4 * i + 3)
-            { // is a grandchild
-                if (arr[min_parent].temperature < arr[min].temperature)
+        if (arr[min].temperature < arr[i].temperature) //if min i lesser than index
+        {   
+            swap(i,min); //swapc
+            if (min >= 4 * i + 3) // if it is a grandchild 
+            { 
+                if (arr[min_parent].temperature < arr[min].temperature) // if the parent is lesser than min
                 {
-                    swap(min, min_parent);
+                    swap(min, min_parent); //swap 
                 }
                 // trickle_down_min(min);
-                i = min;
+                // i = min;  
             }
-            else
-            {
-                break;
-            }
+            // else{
+            //     break;
+            // }
+            i = min;                  
+
         }
         else
         {
@@ -266,7 +247,7 @@ void MinMaxHeap::trickle_down_max(int i)
     int max;
     int max_parent;
 
-    while (size > left_child(i))
+    while (left_child(i)<size)
     { // while node has children
         // return;
         max = max_descendent(i);
@@ -335,10 +316,10 @@ std::vector<SensorReading> MinMaxHeap::top_k_min(int k)
 
     if (size == 0)
     {
-        return min_readings;
+        return min_readings; //if size is 0 return empty list 
     }
 
-    min_readings.push_back(arr[0]);
+    min_readings.push_back(arr[0]); // 
 
     std::vector<int> counting = {0}; // begin at zero
 
@@ -352,7 +333,8 @@ std::vector<SensorReading> MinMaxHeap::top_k_min(int k)
             std::vector<int> children = this->get_children(count);
             for (int child : children)
             {
-                if (child != left_child(count) && child != right_child(count))
+                // if (child != left_child(count) && child != right_child(count))
+                if(child<size)
                 { // only grandchildren get appended
                     Temp.push_back(child);
                     new_counting.push_back(child); // keep appending the grandchildren to new counting vector
@@ -364,10 +346,13 @@ std::vector<SensorReading> MinMaxHeap::top_k_min(int k)
 
         for (int j : Temp)
         {
-            if (min_readings.size() < k)
+            if (min_readings.size() < k) // if k is greater thna size 
             {
                 min_readings.push_back(arr[j]);
             } // push the sorted grandchildren into the min readings array
+            else{
+                break;
+            }
         }
 
         counting = new_counting; // make new counting the counting vector
@@ -378,15 +363,15 @@ std::vector<SensorReading> MinMaxHeap::top_k_min(int k)
 
 std::vector<SensorReading> MinMaxHeap::top_k_max(int k)
 {
-    std::vector<SensorReading> max_readings;
+    std::vector<SensorReading> max_readings; 
 
     if (size == 0)
     {
-        return max_readings;
+        return max_readings; //if size is zero return empty list 
     }
     if (size == 1)
     {
-        max_readings.push_back(arr[0]);
+        max_readings.push_back(arr[0]); 
         return max_readings;
     }
 
@@ -398,7 +383,7 @@ std::vector<SensorReading> MinMaxHeap::top_k_max(int k)
     if (size == 3)
     {
         max_readings.push_back(arr[1]);
-        max_readings.push_back(arr[1]);
+        max_readings.push_back(arr[2]);
         std::sort(max_readings.begin(), max_readings.end(), [](auto &a, auto &b)
                   { return a.temperature > b.temperature; });
         return max_readings;
@@ -416,7 +401,8 @@ std::vector<SensorReading> MinMaxHeap::top_k_max(int k)
             std::vector<int> children = this->get_children(count);
             for (int child : children)
             {
-                if (child != left_child(count) && child != right_child(count))
+                // if (child != left_child(count) && child != right_child(count))
+                if(child<size)
                 { // only grandchildren get appended
                     Temp.push_back(child);
                     new_counting.push_back(child); // keep appending the grandchildren to new counting vector
@@ -424,13 +410,16 @@ std::vector<SensorReading> MinMaxHeap::top_k_max(int k)
             }
         }
         std::sort(Temp.begin(), Temp.end(), [this](int a, int b)
-                  { return arr[a].temperature > arr[b].temperature; });
+                  { return arr[a].temperature > arr[b].temperature; }); //sort in descendimg order based on temp
 
         for (int j : Temp)
         {
-            if (max_readings.size() < k)
+            if (max_readings.size() < k) // if k is greater than size, needs mmore readings 
             {
                 max_readings.push_back(arr[j]);
+            }
+            else{
+                break;
             }
         }
 
