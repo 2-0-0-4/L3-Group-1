@@ -21,8 +21,7 @@ const int numSensors = 15;
 const int delayMs = 100;                   // Interval between readings per sensor
 const int anomalyEvery = 15;               // Inject anomalies every 50 readings
 const int seed = 8969;                     // GLOBAL SEED for reproducibility
-std::vector<std::pair<int, int>> counters; // storing counter for each sensort, first = time, second = count
-// Shared queue and mutex
+vector<pair<int, pair<long long, int>>> coldSpotCounters;// Shared queue and mutex
 queue<SensorReading> readingQueue;
 mutex queueMutex;
 
@@ -108,14 +107,23 @@ void sensorStream(int sensorID)
     }
 }
 
-void update_counters(int x, int t)
-{
-    // for (auto sensor : sensor_vector)
-    // {
-    //     int x = sensor.sensorID;
-    counters[x - 1].first = t;
-    counters[x - 1].second++;
-    // }
+void updateColdSpotCounters(int sensorID, long long timestamp) {
+    bool found = false;
+
+    // Check if sensorID exists in the vector
+    for (auto& entry : coldSpotCounters) {
+        if (entry.first == sensorID) {
+            entry.second.second += 1;  // Increment occurrence count
+            entry.second.first = timestamp; // Update last timestamp
+            found = true;
+            break;
+        }
+    }
+
+    // If sensorID is not found, add new entry
+    if (!found) {
+        coldSpotCounters.push_back({sensorID, {timestamp, 1}});
+    }
 }
 // Monitor thread
 // all the alert signals/checks will go here
@@ -318,20 +326,29 @@ void monitorReadings()
                     outfile << " | Type: Clustered High Spike | Avg Temp: " << (AvgTemp) / clusterMax.size() << " C" << '\n';
                 }
             }
-
-            for (int x = 0; top_min.size(); x++)
-            {
-                long long int curr_time = currentTimestamp();
-                if ((top_min[x].timestamp - counters[top_min[x].sensorID - 1].first) < 10)
-                {
-                    update_counters(top_max[x].sensorID, top_min[x].timestamp);
-                }
-                if (counters[top_min[x].sensorID - 1].second > 5)
-                {
-                    outfile << "[WARNING] Time: " << top_min[x].timestamp << " | Sensor: " << top_min[x].sensorID << " | Type: Cold Spot Detected | Temp: " << top_min[x].temperature << "\n";
+            //COLD DELTECTION LOGIC HERE:::::
+            for (auto& reading : top_min) {
+                if (reading.temperature < AvgTemp - 10) {
+                    updateColdSpotCounters(reading.sensorID, reading.timestamp);
+        
+                    // Check if sensor has reported low temperature for ≥10 seconds
+                    for (auto& entry : coldSpotCounters) {
+                        if (entry.first == reading.sensorID && entry.second.second >= 5) { // Assuming ~2 readings per second
+                            outfile<< "[WARNING] Time: "<< to_string(reading.timestamp) <<
+                                     " | Sensor: " << to_string(reading.sensorID) <<
+                                     " | Type: Cold Spot Detected | Temp: " << to_string(reading.temperature) + "\n";
+                            break;
+                        }
+                    }
+                } else {
+                    // If temperature normalizes, remove sensor from tracking vector
+                    coldSpotCounters.erase(remove_if(coldSpotCounters.begin(), coldSpotCounters.end(),
+                                                     [&](pair<int, pair<long long, int>>& entry) {
+                                                         return entry.first == reading.sensorID;
+                                                     }),
+                                           coldSpotCounters.end());
                 }
             }
-
         } // if size > 5 ends here
 
         this_thread::sleep_for(milliseconds(50));
@@ -346,10 +363,10 @@ int main()
     {
         thread(sensorStream, i).detach();
     }
-    for (auto s : counters)
-    {
-        s.first = s.second = 0;
-    }
+    // for (auto s : counters)
+    // {
+    //     s.first = s.second = 0;
+    // }
     // Start monitor thread
     monitorReadings();
     return 0;
