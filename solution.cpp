@@ -31,6 +31,11 @@ uniform_real_distribution<float> normalDist(40.0, 45.0);
 uniform_real_distribution<float> spikeDist(75.0, 85.0);
 uniform_real_distribution<float> coldDist(10.0, 25.0);
 
+const long long VALID_MS = 60000;  // 60 seconds
+
+std::deque<SensorReading> Buffer;  // A buffer to hold the readings and check fi they cross 60 sec
+
+
 // Get current timestamp
 long long currentTimestamp()
 {
@@ -125,6 +130,14 @@ void updateColdSpotCounters(int sensorID, long long timestamp) {
         coldSpotCounters.push_back({sensorID, {timestamp, 1}});
     }
 }
+
+void removeExpiredReadings(long long now, MinMaxHeap heap) {
+    while (!Buffer.empty() && now - Buffer.front().timestamp > VALID_MS) { // if buffer becomes greater than valid_ms
+        SensorReading expired = Buffer.front(); //pop and delete from heap
+        Buffer.pop_front();
+        heap.delete_value(expired);  
+    }
+}
 // Monitor thread
 // all the alert signals/checks will go here
 void monitorReadings()
@@ -147,6 +160,15 @@ void monitorReadings()
                 //     if(Stream.arr
 
                 // }
+
+                Buffer.push_back(reading); //inser tinto buffer
+
+                long long now = std::chrono::duration_cast<std::chrono::milliseconds>(
+                    std::chrono::system_clock::now().time_since_epoch()
+                ).count(); //gets the time as ms
+
+                removeExpiredReadings(now, Stream); //removes anythign crossing 60 sec
+
                 Stream.replace(reading); // insert/replace into heap
 
                 if (Stream.get_size() >= 1)
@@ -355,6 +377,14 @@ void monitorReadings()
     } // end of while
     outfile.close();
 }
+
+// void removeExpiredReadings(long long now, MinMaxHeap heap) {
+//     while (!Buffer.empty() && now - Buffer.front().timestamp > VALID_MS) {
+//         SensorReading expired = Buffer.front();
+//         Buffer.pop_front();
+//         heap.delete_value(expired);  
+//     }
+// }
 
 int main()
 {

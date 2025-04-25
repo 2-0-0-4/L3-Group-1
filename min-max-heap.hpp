@@ -55,6 +55,7 @@ public:
     void trickle_down_max(int i);
 
     void delete_value(int i);
+    void delete_value(SensorReading Reading);
 
     std::vector<SensorReading> top_k_min(int k);
     std::vector<SensorReading> top_k_max(int k);
