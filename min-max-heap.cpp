@@ -310,6 +310,14 @@ void MinMaxHeap::delete_value(int i)
     }
 }
 
+void MinMaxHeap::delete_value(SensorReading Reading){
+    for(int i =0; i <size; i++){
+        if (arr[i].sensorID == Reading.sensorID){
+            delete_value(i);
+        }
+    }
+}
+
 std::vector<SensorReading> MinMaxHeap::top_k_min(int k)
 {
     std::vector<SensorReading> min_readings;
