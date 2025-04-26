@@ -389,7 +389,11 @@ void monitorReadings()
         {
             lock_guard<mutex> lock(queueMutex);
             if (!readingQueue.empty())
-            {
+            {   
+                //performance metric per loop:
+                auto start = std::chrono::high_resolution_clock::now(); //for analysis
+
+
                 reading = readingQueue.front();
                 readingQueue.pop();
                 // reading.print(); // Replace this with heap insertion
@@ -432,168 +436,172 @@ void monitorReadings()
                         loggedAlerts.insert(alertKeyMax);
                     }
                 }
-            }
-        }
 
-        // Extended alerts
-        if (Stream.get_size() > 5)
-        {
-            std::vector<SensorReading> clusterMin;
-            std::vector<SensorReading> clusterMax;
-            std::vector<SensorReading> top_min = Stream.top_k_min(5);
-            std::vector<SensorReading> top_max = Stream.top_k_max(5);
-            int AvgTemp;
 
-            // Isolated & clustered min
-            std::vector<SensorReading> SensorIdsMin = top_min;
-            std::sort(SensorIdsMin.begin(), SensorIdsMin.end(), [](const SensorReading &a, const SensorReading &b)
-                      { return a.sensorID < b.sensorID; });
-
-            for (int i = 0; i < SensorIdsMin.size(); i++)
-            {
-                // Isolated
-                if (i > 0 && i < SensorIdsMin.size() - 1)
+                if (Stream.get_size() > 5)
                 {
-                    if ((SensorIdsMin[i - 1].sensorID != SensorIdsMin[i].sensorID - 1) &&
-                        (SensorIdsMin[i + 1].sensorID != SensorIdsMin[i].sensorID + 1))
+                    std::vector<SensorReading> clusterMin;
+                    std::vector<SensorReading> clusterMax;
+                    std::vector<SensorReading> top_min = Stream.top_k_min(5);
+                    std::vector<SensorReading> top_max = Stream.top_k_max(5);
+                    int AvgTemp;
+
+                    // Isolated & clustered min
+                    std::vector<SensorReading> SensorIdsMin = top_min;
+                    std::sort(SensorIdsMin.begin(), SensorIdsMin.end(), [](const SensorReading &a, const SensorReading &b)
+                            { return a.sensorID < b.sensorID; });
+
+                    for (int i = 0; i < SensorIdsMin.size(); i++)
                     {
-                        std::string isoKey = std::to_string(SensorIdsMin[i].sensorID) + "_" +
-                                             std::to_string(SensorIdsMin[i].timestamp) + "_ISO_LOW";
-                        if (loggedAlerts.find(isoKey) == loggedAlerts.end())
+                        // Isolated
+                        if (i > 0 && i < SensorIdsMin.size() - 1)
                         {
-                            outfile << "[ALERT] Time: " << SensorIdsMin[i].timestamp << " | Sensor: " << SensorIdsMin[i].sensorID
-                                    << " | Type: Isolated Low Spike | Temp: " << SensorIdsMin[i].temperature
-                                    << " C [NOTE] Neighbouring Sensors " << (SensorIdsMin[i].sensorID - 1)
-                                    << " and " << (SensorIdsMin[i].sensorID + 1) << " are normal.\n";
-                            loggedAlerts.insert(isoKey);
-                        }
-                    }
-                }
-
-                // Cluster
-                if (clusterMin.empty() || SensorIdsMin[i].sensorID == clusterMin.back().sensorID + 1)
-                {
-                    clusterMin.push_back(SensorIdsMin[i]);
-                }
-                else
-                {
-                    if (clusterMin.size() >= 3)
-                    {
-                        std::string clusterKey = "CLUSTER_LOW_" + std::to_string(clusterMin.front().timestamp) + "_";
-                        for (auto &r : clusterMin)
-                            clusterKey += std::to_string(r.sensorID) + "_";
-
-                        if (loggedAlerts.find(clusterKey) == loggedAlerts.end())
-                        {
-                            AvgTemp = 0;
-                            outfile << "[CRITICAL] Time: " << SensorIdsMin[i].timestamp << " | Sensors: ";
-                            for (int j = 0; j < clusterMin.size(); j++)
+                            if ((SensorIdsMin[i - 1].sensorID != SensorIdsMin[i].sensorID - 1) &&
+                                (SensorIdsMin[i + 1].sensorID != SensorIdsMin[i].sensorID + 1))
                             {
-                                outfile << clusterMin[j].sensorID;
-                                if (j != clusterMin.size() - 1)
-                                    outfile << ", ";
-                                AvgTemp += clusterMin[j].temperature;
+                                std::string isoKey = std::to_string(SensorIdsMin[i].sensorID) + "_" +
+                                                    std::to_string(SensorIdsMin[i].timestamp) + "_ISO_LOW";
+                                if (loggedAlerts.find(isoKey) == loggedAlerts.end())
+                                {
+                                    outfile << "[ALERT] Time: " << SensorIdsMin[i].timestamp << " | Sensor: " << SensorIdsMin[i].sensorID
+                                            << " | Type: Isolated Low Spike | Temp: " << SensorIdsMin[i].temperature
+                                            << " C [NOTE] Neighbouring Sensors " << (SensorIdsMin[i].sensorID - 1)
+                                            << " and " << (SensorIdsMin[i].sensorID + 1) << " are normal.\n";
+                                    loggedAlerts.insert(isoKey);
+                                }
                             }
-                            outfile << " | Type: Clustered Low Spike | Avg Temp: "
-                                    << (AvgTemp / clusterMin.size()) << " C\n";
-                            loggedAlerts.insert(clusterKey);
                         }
-                    }
-                    clusterMin = {SensorIdsMin[i]};
-                }
-            }
 
-            // Repeat similar logic for MAX
-            std::vector<SensorReading> SensorIdsMax = top_max;
-            std::sort(SensorIdsMax.begin(), SensorIdsMax.end(), [](const SensorReading &a, const SensorReading &b)
-                      { return a.sensorID > b.sensorID; });
-
-            for (int i = 0; i < SensorIdsMax.size(); i++)
-            {
-                if (i > 0 && i < SensorIdsMax.size() - 1)
-                {
-                    if ((SensorIdsMax[i - 1].sensorID != SensorIdsMax[i].sensorID - 1) &&
-                        (SensorIdsMax[i + 1].sensorID != SensorIdsMax[i].sensorID + 1))
-                    {
-                        std::string isoKey = std::to_string(SensorIdsMax[i].sensorID) + "_" +
-                                             std::to_string(SensorIdsMax[i].timestamp) + "_ISO_HIGH";
-                        if (loggedAlerts.find(isoKey) == loggedAlerts.end())
+                        // Cluster
+                        if (clusterMin.empty() || SensorIdsMin[i].sensorID == clusterMin.back().sensorID + 1)
                         {
-                            outfile << "[ALERT] Time: " << SensorIdsMax[i].timestamp << " | Sensor: " << SensorIdsMax[i].sensorID
-                                    << " | Type: Isolated High Spike | Temp: " << SensorIdsMax[i].temperature
-                                    << " C [NOTE] Neighbouring Sensors " << (SensorIdsMax[i].sensorID - 1)
-                                    << " and " << (SensorIdsMax[i].sensorID + 1) << " are normal. \n";
-                            loggedAlerts.insert(isoKey);
+                            clusterMin.push_back(SensorIdsMin[i]);
                         }
-                    }
-                }
-
-                if (clusterMax.empty() || SensorIdsMax[i].sensorID == clusterMax.back().sensorID + 1)
-                {
-                    clusterMax.push_back(SensorIdsMax[i]);
-                }
-                else
-                {
-                    if (clusterMax.size() >= 3)
-                    {
-                        std::string clusterKey = "CLUSTER_HIGH_" + std::to_string(clusterMax.front().timestamp) + "_";
-                        for (auto &r : clusterMax)
-                            clusterKey += std::to_string(r.sensorID) + "_";
-
-                        if (loggedAlerts.find(clusterKey) == loggedAlerts.end())
+                        else
                         {
-                            AvgTemp = 0;
-                            outfile << "[CRITICAL] Time: " << SensorIdsMax[i].timestamp << " | Sensors: ";
-                            for (int j = 0; j < clusterMax.size(); j++)
+                            if (clusterMin.size() >= 3)
                             {
-                                outfile << clusterMax[j].sensorID;
-                                if (j != clusterMax.size() - 1)
-                                    outfile << ", ";
-                                AvgTemp += clusterMax[j].temperature;
+                                std::string clusterKey = "CLUSTER_LOW_" + std::to_string(clusterMin.front().timestamp) + "_";
+                                for (auto &r : clusterMin)
+                                    clusterKey += std::to_string(r.sensorID) + "_";
+
+                                if (loggedAlerts.find(clusterKey) == loggedAlerts.end())
+                                {
+                                    AvgTemp = 0;
+                                    outfile << "[CRITICAL] Time: " << SensorIdsMin[i].timestamp << " | Sensors: ";
+                                    for (int j = 0; j < clusterMin.size(); j++)
+                                    {
+                                        outfile << clusterMin[j].sensorID;
+                                        if (j != clusterMin.size() - 1)
+                                            outfile << ", ";
+                                        AvgTemp += clusterMin[j].temperature;
+                                    }
+                                    outfile << " | Type: Clustered Low Spike | Avg Temp: "
+                                            << (AvgTemp / clusterMin.size()) << " C\n";
+                                    loggedAlerts.insert(clusterKey);
+                                }
                             }
-                            outfile << " | Type: Clustered High Spike | Avg Temp: "
-                                    << (AvgTemp / clusterMax.size()) << " C\n";
-                            loggedAlerts.insert(clusterKey);
+                            clusterMin = {SensorIdsMin[i]};
                         }
                     }
-                    clusterMax = {SensorIdsMax[i]};
-                }
-            }
 
-            // Cold spot logic
-            for (auto &reading : top_min)
-            {
-                if (reading.temperature < AvgTemp - 10)
-                {
-                    update_cold_counter(reading.sensorID, reading.timestamp);
+                    // Repeat similar logic for MAX
+                    std::vector<SensorReading> SensorIdsMax = top_max;
+                    std::sort(SensorIdsMax.begin(), SensorIdsMax.end(), [](const SensorReading &a, const SensorReading &b)
+                            { return a.sensorID > b.sensorID; });
 
-                    for (auto &entry : cold_counter)
+                    for (int i = 0; i < SensorIdsMax.size(); i++)
                     {
-                        if (entry.first == reading.sensorID && entry.second.second >= 5)
+                        if (i > 0 && i < SensorIdsMax.size() - 1)
                         {
-                            std::string coldKey = "COLD_" + std::to_string(reading.sensorID) + "_" + std::to_string(reading.timestamp);
-                            if (loggedAlerts.find(coldKey) == loggedAlerts.end())
+                            if ((SensorIdsMax[i - 1].sensorID != SensorIdsMax[i].sensorID - 1) &&
+                                (SensorIdsMax[i + 1].sensorID != SensorIdsMax[i].sensorID + 1))
                             {
-                                outfile << "[WARNING] Time: " << reading.timestamp
-                                        << " | Sensor: " << reading.sensorID
-                                        << " | Type: Cold Spot Detected | Temp: " << reading.temperature << "\n";
-                                loggedAlerts.insert(coldKey);
+                                std::string isoKey = std::to_string(SensorIdsMax[i].sensorID) + "_" +
+                                                    std::to_string(SensorIdsMax[i].timestamp) + "_ISO_HIGH";
+                                if (loggedAlerts.find(isoKey) == loggedAlerts.end())
+                                {
+                                    outfile << "[ALERT] Time: " << SensorIdsMax[i].timestamp << " | Sensor: " << SensorIdsMax[i].sensorID
+                                            << " | Type: Isolated High Spike | Temp: " << SensorIdsMax[i].temperature
+                                            << " C [NOTE] Neighbouring Sensors " << (SensorIdsMax[i].sensorID - 1)
+                                            << " and " << (SensorIdsMax[i].sensorID + 1) << " are normal. \n";
+                                    loggedAlerts.insert(isoKey);
+                                }
                             }
-                            break;
+                        }
+
+                        if (clusterMax.empty() || SensorIdsMax[i].sensorID == clusterMax.back().sensorID + 1)
+                        {
+                            clusterMax.push_back(SensorIdsMax[i]);
+                        }
+                        else
+                        {
+                            if (clusterMax.size() >= 3)
+                            {
+                                std::string clusterKey = "CLUSTER_HIGH_" + std::to_string(clusterMax.front().timestamp) + "_";
+                                for (auto &r : clusterMax)
+                                    clusterKey += std::to_string(r.sensorID) + "_";
+
+                                if (loggedAlerts.find(clusterKey) == loggedAlerts.end())
+                                {
+                                    AvgTemp = 0;
+                                    outfile << "[CRITICAL] Time: " << SensorIdsMax[i].timestamp << " | Sensors: ";
+                                    for (int j = 0; j < clusterMax.size(); j++)
+                                    {
+                                        outfile << clusterMax[j].sensorID;
+                                        if (j != clusterMax.size() - 1)
+                                            outfile << ", ";
+                                        AvgTemp += clusterMax[j].temperature;
+                                    }
+                                    outfile << " | Type: Clustered High Spike | Avg Temp: "
+                                            << (AvgTemp / clusterMax.size()) << " C\n";
+                                    loggedAlerts.insert(clusterKey);
+                                }
+                            }
+                            clusterMax = {SensorIdsMax[i]};
                         }
                     }
+
+                    // Cold spot logic
+                    for (auto &reading : top_min)
+                    {
+                        if (reading.temperature < AvgTemp - 10)
+                        {
+                            update_cold_counter(reading.sensorID, reading.timestamp);
+
+                            for (auto &entry : cold_counter)
+                            {
+                                if (entry.first == reading.sensorID && entry.second.second >= 5)
+                                {
+                                    std::string coldKey = "COLD_" + std::to_string(reading.sensorID) + "_" + std::to_string(reading.timestamp);
+                                    if (loggedAlerts.find(coldKey) == loggedAlerts.end())
+                                    {
+                                        outfile << "[WARNING] Time: " << reading.timestamp
+                                                << " | Sensor: " << reading.sensorID
+                                                << " | Type: Cold Spot Detected | Temp: " << reading.temperature << "\n";
+                                        loggedAlerts.insert(coldKey);
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            cold_counter.erase(remove_if(cold_counter.begin(), cold_counter.end(),
+                                                        [&](pair<int, pair<long long, int>> &entry)
+                                                        {
+                                                            return entry.first == reading.sensorID;
+                                                        }),
+                                            cold_counter.end());
+                        }
+                    }
+
                 }
-                else
-                {
-                    cold_counter.erase(remove_if(cold_counter.begin(), cold_counter.end(),
-                                                 [&](pair<int, pair<long long, int>> &entry)
-                                                 {
-                                                     return entry.first == reading.sensorID;
-                                                 }),
-                                       cold_counter.end());
-                }
+                auto end = std::chrono::high_resolution_clock::now(); 
+                std::chrono::duration<double, std::milli> elapsed = end - start;
+                std::cout << "Processing time: " << elapsed.count() << " ms\n";
             }
-        }
+                    }
 
         this_thread::sleep_for(milliseconds(50));
     }
@@ -621,6 +629,12 @@ int main()
     //     s.first = s.second = 0;
     // }
     // Start monitor thread
+    // auto start = std::chrono::high_resolution_clock::now(); //for analysis
     monitorReadings();
+
+    // auto end = std::chrono::high_resolution_clock::now(); 
+    // std::chrono::duration<double, std::milli> elapsed = end - start;
+    // std::cout << "Processing time: " << elapsed.count() << " ms\n";
+
     return 0;
 }
