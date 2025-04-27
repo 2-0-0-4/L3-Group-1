@@ -134,7 +134,7 @@ void update_cold_counter(int sensorID, long long timestamp)
 }
 
 void removeReadings(long long now, MinMaxHeap heap) {
-    while (!Buffer.empty() && now - Buffer.front().timestamp > VALID_MS) { // if buffer becomes greater than valid_ms
+    while (!Buffer.empty() && VALID_MS < (now - Buffer.front().timestamp)) { // if buffer becomes greater than valid_ms
         SensorReading to_be_deleted = Buffer.front(); //pop and delete from heap
         Buffer.pop_front();
         heap.delete_value(to_be_deleted);  
