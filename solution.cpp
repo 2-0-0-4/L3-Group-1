@@ -133,11 +133,11 @@ void update_cold_counter(int sensorID, long long timestamp)
     }
 }
 
-void removeExpiredReadings(long long now, MinMaxHeap heap) {
+void removeReadings(long long now, MinMaxHeap heap) {
     while (!Buffer.empty() && now - Buffer.front().timestamp > VALID_MS) { // if buffer becomes greater than valid_ms
-        SensorReading expired = Buffer.front(); //pop and delete from heap
+        SensorReading to_be_deleted = Buffer.front(); //pop and delete from heap
         Buffer.pop_front();
-        heap.delete_value(expired);  
+        heap.delete_value(to_be_deleted);  
     }
 }
 
@@ -172,7 +172,7 @@ void monitorReadings()
                     std::chrono::system_clock::now().time_since_epoch()
                 ).count(); //gets the time as ms
 
-                removeExpiredReadings(now, Stream); //removes anythign crossing 60 sec
+                removeReadings(now, Stream); //removes anythign crossing 60 sec
 
                 Stream.replace(reading); // insert/replace into heap
 
